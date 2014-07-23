@@ -216,11 +216,11 @@ public class EntityChinu extends Entity {
                 }
 
                 if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyLeft)) {
-                    this.rotationYaw -= 8;
+                    this.rotationYaw -= 4;
                     if(this.rotationYaw < -360)
                         rotationYaw += 360;
                 } else if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyRight)) {
-                    this.rotationYaw += 8;
+                    this.rotationYaw += 4;
                     if(this.rotationYaw > 360)
                         rotationYaw -= 360;
                 }
