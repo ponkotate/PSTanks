@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import pstanks.client.render.RenderChinu;
 import pstanks.client.render.RenderStug3;
 import pstanks.entity.EntityChinu;
+import pstanks.entity.EntityStug3;
 import pstanks.system.CommonProxy;
 
 public class ClientProxy extends CommonProxy {
@@ -24,6 +25,6 @@ public class ClientProxy extends CommonProxy {
     public void register(){
         FMLCommonHandler.instance().bus().register(new KeyHandler());
         RenderingRegistry.registerEntityRenderingHandler(EntityChinu.class, new RenderChinu());
-        RenderingRegistry.registerEntityRenderingHandler(EntityBoat.class, new RenderStug3());
+        RenderingRegistry.registerEntityRenderingHandler(EntityStug3.class, new RenderStug3());
     }
 }

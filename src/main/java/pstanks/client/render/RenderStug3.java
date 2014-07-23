@@ -27,7 +27,37 @@ public class RenderStug3 extends Render {
         this.bindTexture(boatTextures);
         GL11.glScalef(1.6F, 1.6F, 1.6F);
         GL11.glDisable(GL11.GL_CULL_FACE);
-        this.model.renderAllExcept();
+        this.model.renderAllExcept("Cannon");
+
+        {
+            double p = 0;
+            GL11.glTranslated(0, 1.5, 0.7);
+
+            if (p_76986_1_.riddenByEntity != null)
+                p = p_76986_1_.riddenByEntity.rotationPitch;
+
+            if(p > 25)p = 25;
+            if(p < -30)p=-30;
+
+            GL11.glRotated(p, 1, 0, 0);
+
+            double y = 0;
+
+            if (p_76986_1_.riddenByEntity != null)
+                y = p_76986_1_.riddenByEntity.rotationYaw+180.0F - p_76986_8_;
+
+            while (y <= -300)y+=360;
+            while (y > 300)y-=360;
+
+            if(y > 25)y = 25;
+            if(y < -25)y=-25;
+
+            GL11.glRotated(-y, 0, 1, 0);
+            GL11.glTranslated(0, -1.5, -0.7);
+
+            model.renderOnly("Cannon");
+        }
+
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopMatrix();
     }

@@ -11,7 +11,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import pstanks.Packet.PacketPipeline;
 import pstanks.entity.EntityChinu;
+import pstanks.entity.EntityStug3;
 import pstanks.item.ItemChinu;
+import pstanks.item.ItemStug3;
 import pstanks.system.CommonProxy;
 
 @Mod(modid = "psTanks", name = "test")
@@ -19,6 +21,7 @@ public class Tanks {
     public static final PacketPipeline packetPipeline = new PacketPipeline();
 
     public Item itemChinu;
+    public Item itemStug3;
 
     @SidedProxy(clientSide = "pstanks.client.ClientProxy", serverSide = "pstanks.system.CommonProxy")
     public static CommonProxy proxy;
@@ -41,11 +44,24 @@ public class Tanks {
                         "SSS",
                         'S', Item.itemRegistry.getObject("iron_ingot")
                 });
+
+        itemStug3 = new ItemStug3().setUnlocalizedName("Stug3");
+        GameRegistry.registerItem(itemStug3, "Stug3");
+
+        GameRegistry.addRecipe(
+                new ItemStack(itemStug3, 1),
+                new Object[]{
+                        "SSS",
+                        "SSS",
+                        "SSS",
+                        'S', Item.itemRegistry.getObject("iron_ingot")
+                });
     }
 
     @Mod.EventHandler
     public void initialise(FMLInitializationEvent evt) {
         EntityRegistry.registerModEntity(EntityChinu.class, "EntityChinu", 1, this, 250, 1, false);
+        EntityRegistry.registerModEntity(EntityStug3.class, "EntityStug3", 2, this, 250, 1, false);
 
         proxy.register();
     }
