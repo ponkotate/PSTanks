@@ -1,0 +1,16 @@
+[
+{
+  "modid": "psTanks",
+  "name": "tanks",
+  "description": "few Tank",
+  "version": "0",
+  "mcversion": "1.7.10",
+  "url": "",
+  "updateUrl": "",
+  "authors": ["samuihuyu","ponkotate"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
