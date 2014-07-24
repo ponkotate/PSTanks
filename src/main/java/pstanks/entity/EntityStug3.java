@@ -35,6 +35,9 @@ public class EntityStug3 extends Entity {
     @SideOnly(Side.CLIENT)
     private double velocityZ;
 
+    private int gd = 0;
+    private int sd = 0;
+
     public EntityStug3(World p_i1704_1_) {
         super(p_i1704_1_);
         this.isTankEmpty = true;
@@ -200,30 +203,45 @@ public class EntityStug3 extends Entity {
                 this.motionZ *= 0.9900000095367432D;
             }
         } else {
+            if(gd > 0)
+                gd--;
+            if(sd > 0)
+                sd--;
+
             {
-                this.motionY -= 0.01;
+                this.motionY -= 0.1;
             }
 
             if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityLivingBase) {
-                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyBack)) {
-                    if (speed < 5)
-                        this.speed += 1;
-                } else if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyForward)) {
-                    if (speed > -5)
-                        this.speed -= 1;
+                if(gd == 0) {
+                    if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyBack)) {
+                        if (speed < 5) {
+                            this.speed += 1;
+                            gd = 16;
+                        }
+                    } else if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyForward)) {
+                        if (speed > -5) {
+                            this.speed -= 1;
+                            gd = 16;
+                        }
+                    }
                 }
 
                 if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyLeft)) {
-                    this.rotationYaw -= 4;
+                    if (speed > 0)
+                        this.rotationYaw += 3;
+                    else this.rotationYaw -= 3;
                     if (this.rotationYaw < -360)
                         rotationYaw += 360;
                 } else if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyRight)) {
-                    this.rotationYaw += 4;
+                    if (speed > 0)
+                        this.rotationYaw -= 3;
+                    else this.rotationYaw += 3;
                     if (this.rotationYaw > 360)
                         rotationYaw -= 360;
                 }
 
-                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyShot)) {
+                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyShot)&&sd == 0) {
                     double p = 0;
 
                     p = riddenByEntity.rotationPitch;
@@ -236,25 +254,27 @@ public class EntityStug3 extends Entity {
                     y = riddenByEntity.rotationYaw + 180.0F - rotationYaw;
 
                     while (y <= -300) y += 360;
-                    while (y > 300)y-=360;
+                    while (y > 300) y -= 360;
 
                     if (y > 25) y = 25;
                     if (y < -25) y = -25;
 
-                    double d0 = Math.cos((y+rotationYaw-90) * Math.PI / 180.0D) * 2.4D;
-                    double d1 = Math.sin((y+rotationYaw-90) * Math.PI / 180.0D) * 2.4D;
+                    double d0 = Math.cos((y + rotationYaw - 90) * Math.PI / 180.0D) * 2.4D;
+                    double d1 = Math.sin((y + rotationYaw - 90) * Math.PI / 180.0D) * 2.4D;
                     double d2 = Math.sin(-p * Math.PI / 180.0D) * 1.6D;
                     EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(worldObj, posX + d0, posY + 2.4, posZ + d1, (EntityLivingBase) riddenByEntity);
                     entityTNTPrimed.motionX = d0;
                     entityTNTPrimed.motionY = d2;
                     entityTNTPrimed.motionZ = d1;
                     worldObj.spawnEntityInWorld(entityTNTPrimed);
+                    worldObj.createExplosion(riddenByEntity,posX+d0,posY+2.4,posZ+d1,1.5F,false);
+                    sd = 15;
                 }
             }
 
             float f = this.rotationYaw;
-            this.motionX = -Math.sin((double) (f * (float) Math.PI / 180.0F)) * this.speed * 0.2;
-            this.motionZ = Math.cos((double) (f * (float) Math.PI / 180.0F)) * this.speed * 0.2;
+            this.motionX = -Math.sin((double) (f * (float) Math.PI / 180.0F)) * this.speed * 0.08;
+            this.motionZ = Math.cos((double) (f * (float) Math.PI / 180.0F)) * this.speed * 0.08;
 
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
 

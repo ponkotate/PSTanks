@@ -19,11 +19,19 @@ public class RenderChinu extends Render {
         this.model = (WavefrontObject) (new ObjModelLoader()).loadInstance(new ResourceLocation("pstanks:tanks/chi_nu.obj"));
     }
 
-    public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_) {
+    public void doRender(Entity entity, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) p_76986_2_, (float) p_76986_4_ + 1.6F, (float) p_76986_6_);
         GL11.glRotatef(180.0F - p_76986_8_, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef((float) ((p_76986_1_.posY-p_76986_1_.prevPosY)*-90.0F), 1.0F, 0.0F, 0.0F);
+        double xy = Math.toDegrees(Math.atan2(entity.posZ-entity.prevPosZ,entity.posX-entity.prevPosX))-entity.rotationYaw;
+
+        double r = 50;
+
+        if(xy > 90-r&&xy<90+r){
+            GL11.glRotatef((float) ((entity.posY-entity.prevPosY)*-90.0F), -1.0F, 0.0F, 0.0F);
+        } else if(xy > -90-r&&xy < -90+r){
+            GL11.glRotatef((float) ((entity.posY-entity.prevPosY)*-90.0F), 1.0F, 0.0F, 0.0F);
+        }
         this.bindTexture(boatTextures);
         GL11.glScalef(0.6F, 0.6F, 0.6F);
         GL11.glDisable(GL11.GL_CULL_FACE);
@@ -31,8 +39,8 @@ public class RenderChinu extends Render {
         {
             GL11.glTranslated(0, 0, -0.2);
             GL11.glRotatef(180.0F - p_76986_8_, 0.0F, -1.0F, 0.0F);
-            if (p_76986_1_.riddenByEntity != null)
-                GL11.glRotated(-p_76986_1_.riddenByEntity.rotationYaw, 0, 1, 0);
+            if (entity.riddenByEntity != null)
+                GL11.glRotated(-entity.riddenByEntity.rotationYaw, 0, 1, 0);
             else GL11.glRotated(180, 0, 1, 0);
             GL11.glTranslated(0, 0, 0.2);
             model.renderOnly("houtou", "hatti1", "hatti2");
@@ -40,8 +48,8 @@ public class RenderChinu extends Render {
             GL11.glTranslated(0, 0, 0.8);
             double p = 0;
 
-            if (p_76986_1_.riddenByEntity != null)
-                p = p_76986_1_.riddenByEntity.rotationPitch;
+            if (entity.riddenByEntity != null)
+                p = entity.riddenByEntity.rotationPitch;
 
             if(p > 25)p = 25;
             if(p < -30)p=-30;

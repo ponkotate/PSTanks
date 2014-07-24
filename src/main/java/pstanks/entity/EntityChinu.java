@@ -37,6 +37,9 @@ public class EntityChinu extends Entity {
     @SideOnly(Side.CLIENT)
     private double velocityZ;
 
+    private int gd = 0;
+    private int sd = 0;
+
     public EntityChinu(World p_i1704_1_) {
         super(p_i1704_1_);
         this.isTankEmpty = true;
@@ -202,30 +205,47 @@ public class EntityChinu extends Entity {
                 this.motionZ *= 0.9900000095367432D;
             }
         } else {
+
+            if(gd > 0)
+                gd--;
+
+            if(sd > 0)
+                sd--;
+
             {
                 this.motionY -= 0.01;
             }
 
             if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityLivingBase) {
-                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyBack)) {
-                    if (speed < 5)
-                        this.speed += 1;
-                } else if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyForward)) {
-                    if (speed > -5)
-                        this.speed -= 1;
+                if(gd == 0) {
+                    if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyBack)) {
+                        if (speed < 5) {
+                            this.speed += 1;
+                            gd = 16;
+                        }
+                    } else if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyForward)) {
+                        if (speed > -5) {
+                            this.speed -= 1;
+                            gd = 16;
+                        }
+                    }
                 }
 
                 if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyLeft)) {
-                    this.rotationYaw -= 4;
+                    if (speed > 0)
+                        this.rotationYaw += 3;
+                    else this.rotationYaw -= 3;
                     if(this.rotationYaw < -360)
                         rotationYaw += 360;
                 } else if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyRight)) {
-                    this.rotationYaw += 4;
+                    if (speed > 0)
+                        this.rotationYaw -= 3;
+                    else this.rotationYaw += 3;
                     if(this.rotationYaw > 360)
                         rotationYaw -= 360;
                 }
 
-                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyShot)) {
+                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyShot)&&sd == 0) {
                     double d0 = Math.cos(((double) riddenByEntity.rotationYaw+90) * Math.PI / 180.0D) * 1.6D;
                     double d1 = Math.sin(((double) riddenByEntity.rotationYaw+90) * Math.PI / 180.0D) * 1.6D;
                     double d2 = Math.sin(((double) -riddenByEntity.rotationPitch) * Math.PI / 180.0D) * 1.6D;
@@ -234,12 +254,14 @@ public class EntityChinu extends Entity {
                     entityTNTPrimed.motionY = d2;
                     entityTNTPrimed.motionZ = d1;
                     worldObj.spawnEntityInWorld(entityTNTPrimed);
+                    worldObj.createExplosion(riddenByEntity,posX+d0,posY+2.4,posZ+d1,1.0F,false);
+                    sd = 15;
                 }
             }
 
             float f = this.rotationYaw;
-            this.motionX = -Math.sin((double) (f * (float) Math.PI / 180.0F)) * this.speed*0.2;
-            this.motionZ = Math.cos((double) (f * (float) Math.PI / 180.0F)) * this.speed*0.2;
+            this.motionX = -Math.sin((double) (f * (float) Math.PI / 180.0F)) * this.speed*0.1;
+            this.motionZ = Math.cos((double) (f * (float) Math.PI / 180.0F)) * this.speed*0.1;
 
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
 
