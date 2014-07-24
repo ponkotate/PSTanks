@@ -39,6 +39,8 @@ public class EntityChinu extends Entity {
 
     private int gd = 0;
     private int sd = 0;
+    private int sh = 0;
+    private int shd = 0;
 
     public EntityChinu(World p_i1704_1_) {
         super(p_i1704_1_);
@@ -58,6 +60,7 @@ public class EntityChinu extends Entity {
         this.dataWatcher.addObject(17, 0);
         this.dataWatcher.addObject(18, 1);
         this.dataWatcher.addObject(19, 0.0F);
+        this.dataWatcher.addObject(20, 0);
     }
 
     public AxisAlignedBB getCollisionBox(Entity p_70114_1_) {
@@ -84,7 +87,7 @@ public class EntityChinu extends Entity {
     }
 
     public double getMountedYOffset() {
-        return 2.8;
+        return 0;
     }
 
     public boolean attackEntityFrom(DamageSource p_70097_1_, float p_70097_2_) {
@@ -209,6 +212,9 @@ public class EntityChinu extends Entity {
             if(gd > 0)
                 gd--;
 
+            if(shd > 0)
+                shd--;
+
             if(sd > 0)
                 sd--;
 
@@ -243,6 +249,13 @@ public class EntityChinu extends Entity {
                     else this.rotationYaw += 3;
                     if(this.rotationYaw > 360)
                         rotationYaw -= 360;
+                }
+
+                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyJump)&&shd == 0) {
+                    sh+=1;
+                    if(sh > 2)sh = 0;
+                    dataWatcher.updateObject(20,sh);
+                    shd = 16;
                 }
 
                 if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyShot)&&sd == 0) {
@@ -303,7 +316,7 @@ public class EntityChinu extends Entity {
         if (this.riddenByEntity != null) {
             double d0 = Math.cos(((double) riddenByEntity.rotationYaw-50-90) * Math.PI / 180.0D) * 0.7D;
             double d1 = Math.sin(((double) riddenByEntity.rotationYaw-50-90) * Math.PI / 180.0D) * 0.7D;
-            this.riddenByEntity.setPosition(this.posX + d0, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ + d1);
+            this.riddenByEntity.setPosition(this.posX + d0, this.posY + dataWatcher.getWatchableObjectInt(20) * 0.4 + this.riddenByEntity.getYOffset()+1.8, this.posZ + d1);
         }
     }
 

@@ -15,10 +15,13 @@ public class KeyHandler {
 
     private static Minecraft mc = FMLClientHandler.instance().getClient();
 
+    private int a = 0;
+
     @SubscribeEvent
     public void key(TickEvent.ClientTickEvent event) {
+        a++;
 
-        if (mc.thePlayer != null&&event.phase.equals(TickEvent.Phase.END)) {
+        if (mc.thePlayer != null&&event.phase.equals(TickEvent.Phase.END)&&a%5 == 0) {
             List<Integer> keyData = new ArrayList<Integer>();
 
             if (mc.gameSettings.keyBindForward.getIsKeyPressed()) {
@@ -35,6 +38,10 @@ public class KeyHandler {
             }
             if (mc.gameSettings.keyBindAttack.getIsKeyPressed()) {
                 keyData.add(DataManager.keyShot);
+            }
+
+            if (mc.gameSettings.keyBindJump.getIsKeyPressed()) {
+                keyData.add(DataManager.keyJump);
             }
 
             //闇コードここまで

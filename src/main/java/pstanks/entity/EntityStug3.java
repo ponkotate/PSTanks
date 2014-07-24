@@ -4,8 +4,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.EntityDragonPart;
 import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -37,12 +39,17 @@ public class EntityStug3 extends Entity {
 
     private int gd = 0;
     private int sd = 0;
+    private int sh = 0;
+    private int shd = 0;
+
+    public Entity edc = null;
+    public Entity erc = null;
 
     public EntityStug3(World p_i1704_1_) {
         super(p_i1704_1_);
         this.isTankEmpty = true;
         this.preventEntitySpawning = true;
-        this.setSize(2.5F, 0.01F);
+        this.setSize(6.0F, 0.01F);
         this.yOffset = this.height / 2.0F;
         this.ignoreFrustumCheck = true;
         this.stepHeight = 2.0F;
@@ -56,6 +63,10 @@ public class EntityStug3 extends Entity {
         this.dataWatcher.addObject(17, 0);
         this.dataWatcher.addObject(18, 1);
         this.dataWatcher.addObject(19, 0.0F);
+        this.dataWatcher.addObject(20, 0);
+        this.dataWatcher.addObject(21, 0);
+        this.dataWatcher.addObject(22, 0.0F);
+        this.dataWatcher.addObject(23, 0.0F);
     }
 
     public AxisAlignedBB getCollisionBox(Entity p_70114_1_) {
@@ -203,17 +214,63 @@ public class EntityStug3 extends Entity {
                 this.motionZ *= 0.9900000095367432D;
             }
         } else {
-            if(gd > 0)
+            if (edc == null) {
+                edc = new EntityChair(this);
+                double d00 = Math.cos(((double) rotationYaw + 55 - 180) * Math.PI / 180.0D) * 1.8D;
+                double d10 = Math.sin(((double) rotationYaw + 55 - 180) * Math.PI / 180.0D) * 1.8D;
+                edc.setPosition(this.posX + d00, this.posY + 2.8, this.posZ + d10);
+                worldObj.spawnEntityInWorld(edc);
+                erc = new EntityChair(this);
+                d00 = Math.cos(((double) rotationYaw + 35) * Math.PI / 180.0D) * 1.3D;
+                d10 = Math.sin(((double) rotationYaw + 35) * Math.PI / 180.0D) * 1.3D;
+                erc.setPosition(this.posX + d00, this.posY + dataWatcher.getWatchableObjectInt(21) * 0.4 + 3, this.posZ + d10);
+                worldObj.spawnEntityInWorld(erc);
+            }
+
+            double d00 = Math.cos(((double) rotationYaw + 55 - 180) * Math.PI / 180.0D) * 1.8D;
+            double d10 = Math.sin(((double) rotationYaw + 55 - 180) * Math.PI / 180.0D) * 1.8D;
+            edc.setPosition(this.posX + d00, this.posY + 2.8, this.posZ + d10);
+            d00 = Math.cos(((double) rotationYaw + 35) * Math.PI / 180.0D) * 1.3D;
+            d10 = Math.sin(((double) rotationYaw + 35) * Math.PI / 180.0D) * 1.3D;
+            erc.setPosition(this.posX + d00, this.posY + dataWatcher.getWatchableObjectInt(21) * 0.5 + 3, this.posZ + d10);
+
+            if (gd > 0)
                 gd--;
-            if(sd > 0)
+            if (shd > 0)
+                shd--;
+            if (sd > 0)
                 sd--;
 
             {
                 this.motionY -= 0.1;
             }
 
-            if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityLivingBase) {
-                if(gd == 0) {
+
+            if (this.erc.riddenByEntity != null && this.erc.riddenByEntity instanceof EntityPlayer) {
+                EntityPlayer player = (EntityPlayer) this.erc.riddenByEntity;
+                double r = player.rotationYaw - rotationYaw - 180;
+                double rp = player.rotationPitch;
+                double n = 25;
+                if (r > -n && r < n&&rp > -n && rp < n) {
+                    dataWatcher.updateObject(22,(float)r);
+                    dataWatcher.updateObject(23,(float)rp);
+
+                    if (DataManager.isKeyPress(player, DataManager.keyShot)) {
+                        worldObj.spawnEntityInWorld(new EntityArrow(worldObj, player, 2));
+                    }
+                }
+
+                if (DataManager.isKeyPress(player, DataManager.keyJump) && shd == 0) {
+                    dataWatcher.updateObject(21, dataWatcher.getWatchableObjectInt(21) + 1);
+                    if (dataWatcher.getWatchableObjectInt(21) > 2) {
+                        dataWatcher.updateObject(21, 0);
+                    }
+                    shd = 16;
+                }
+            }
+
+            if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityPlayer) {
+                if (gd == 0) {
                     if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyBack)) {
                         if (speed < 5) {
                             this.speed += 1;
@@ -241,7 +298,19 @@ public class EntityStug3 extends Entity {
                         rotationYaw -= 360;
                 }
 
-                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyShot)&&sd == 0) {
+                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyJump)) {
+                    speed = 0;
+                    gd = 0;
+                }
+
+                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyJump) && shd == 0) {
+                    sh += 1;
+                    if (sh > 2) sh = 0;
+                    dataWatcher.updateObject(20, sh);
+                    shd = 16;
+                }
+
+                if (DataManager.isKeyPress((EntityPlayer) this.riddenByEntity, DataManager.keyShot) && sd == 0) {
                     double p = 0;
 
                     p = riddenByEntity.rotationPitch;
@@ -267,7 +336,7 @@ public class EntityStug3 extends Entity {
                     entityTNTPrimed.motionY = d2;
                     entityTNTPrimed.motionZ = d1;
                     worldObj.spawnEntityInWorld(entityTNTPrimed);
-                    worldObj.createExplosion(riddenByEntity,posX+d0,posY+2.4,posZ+d1,1.5F,false);
+                    worldObj.createExplosion(riddenByEntity, posX + d0, posY + 2.4, posZ + d1, 1.5F, false);
                     sd = 15;
                 }
             }
@@ -316,7 +385,7 @@ public class EntityStug3 extends Entity {
         if (this.riddenByEntity != null) {
             double d0 = Math.cos(((double) rotationYaw + 60 - 270) * Math.PI / 180.0D) * 1.3D;
             double d1 = Math.sin(((double) rotationYaw + 60 - 270) * Math.PI / 180.0D) * 1.3D;
-            this.riddenByEntity.setPosition(this.posX + d0, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ + d1);
+            this.riddenByEntity.setPosition(this.posX + d0, this.posY + dataWatcher.getWatchableObjectInt(20) * 0.4 + this.riddenByEntity.getYOffset() + 1.5, this.posZ + d1);
         }
     }
 

@@ -11,6 +11,7 @@ public class DataManager {//ハードコーディング大量の闇
     public static final int keyForward = 3;
     public static final int keyBack = 4;
     public static final int keyShot = 5;
+    public static final int keyJump = 6;
 
     private static HashMap<EntityPlayer, List<Integer>> KeyData = new HashMap<EntityPlayer, List<Integer>>();
 
